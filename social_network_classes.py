@@ -1,40 +1,67 @@
-# A class to hold general system wide social media data and functions. Eg Data objects of all people, Eg functions: Save social media to disk
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+        self.friends = []
+        self.blocked_friends = []
+        self.messages = []
+
+    def add_friend(self, person):
+        if person not in self.friends:
+            self.friends.append(person)
+            person.friends.append(self)
+
+    def block_friend(self, person):
+        if person in self.friends:
+            self.friends.remove(person)
+            person.friends.remove(self)
+            self.blocked_friends.append(person)
+            person.blocked_friends.append(self)
+
+    def send_message(self, person, message):
+        if person in self.friends:
+            person.messages.append((self.name, message))
+        else:
+            print(f"Cannot send message. {person.name} is not your friend.")
+
 class SocialNetwork:
     def __init__(self):
-        self.list_of_people = [] # this instance variable is initialized to an empty list when social network is created, 
-                                 # you can save objects of people on the network in this list
-        
-    ## For more challenge try this
-    def save_social_media(self):
-        # function to save social media to a file on disk 
-        # hint: look up how to use python's inbuil json module to turn objects to json
-        # you can write this json unto a file on disk
-        pass
+        self.list_of_people = []
 
-    ## For more challenge try this
-    def reload_social_media(self):
-        # function to load saved social media from file on disk 
-        # hint: load a the json file from disk and look up how to recreate the list of people objects.
-        pass
+    def create_account(self, name, age):
+        person = Person(name, age)
+        self.list_of_people.append(person)
+        print("Account created successfully!")
 
-        def  create_account(self, name):
-            #implement function that creates account here
-            print("Creating ...")
-            name = input("Enter your name: ")
+    def find_person(self, name):
+        for person in self.list_of_people:
+            if person.name == name:
+                return person
+        return None
 
-            pass
+    def add_friend(self, person_name, friend_name):
+        person = self.find_person(person_name)
+        friend = self.find_person(friend_name)
+        if person and friend:
+            person.add_friend(friend)
+            print(f"{friend_name} added as a friend for {person_name}.")
+        else:
+            print("Person or friend not found.")
 
+    def block_friend(self, person_name, friend_name):
+        person = self.find_person(person_name)
+        friend = self.find_person(friend_name)
+        if person and friend:
+            person.block_friend(friend)
+            print(f"{friend_name} blocked by {person_name}.")
+        else:
+            print("Person or friend not found.")
 
-    class Person:
-        def __init__(self, name, age):
-            self.id = name
-            self.year = age
-            self.friendlist = []
-
-    def add_friend(self, person_object):
-        #implement adding friend. Hint add to self.friendlist
-        pass
-
-    def send_message(self):
-        #implement sending message to friend here
-        pass
+    def send_message(self, sender_name, recipient_name, message):
+        sender = self.find_person(sender_name)
+        recipient = self.find_person(recipient_name)
+        if sender and recipient:
+            sender.send_message(recipient, message)
+            print(f"Message sent from {sender_name} to {recipient_name}.")
+        else:
+            print("Sender or recipient not found.")
